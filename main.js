@@ -46,7 +46,7 @@ scene.add(dlightShadowHelper);
 const dlightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
 scene.add(dlightHelper);
 
-scene.background = new THREE.Color(0x6A4E23); // Darker wood tone
+scene.background = new THREE.Color(0xfffffff); // Darker wood tone
 
 const textureLoader = new THREE.TextureLoader();
 
@@ -79,13 +79,13 @@ shpere.castShadow = true;
 const gui = new dat.GUI();
 const optiones = {
     shpereColor: 0xFFFFFF,
-    speed: 0.01
+    
 };
 
 gui.addColor(optiones, 'shpereColor').onChange(function(e) {
     shpere.material.color.set(e);
 });
-gui.add(optiones, 'speed', 0, 0.1);
+//gui.add(optiones, 'speed', 0, 0.1);
 
 //*********************************************** Game Logic Setup ****************************************************** */
 // Global variables
@@ -99,12 +99,12 @@ const sphereVelocity = {
     z: 0
 };
 const moveSpeed = 0.1;
-const gravity = -0.02;
-const jumpForce = 1;
-let canJump = false;
+const gravity = -0.07;
+const jumpForce = 0.8;
+let canJump = false; //prevent unlimited jumping 
 
 // Keyboard controls
-const keys = {
+const keys = {       //This object defines the keyboard input of the controls.
     ArrowUp: false,
     ArrowDown: false,
     ArrowLeft: false,
@@ -112,7 +112,7 @@ const keys = {
     Space: false
 };
 
-window.addEventListener('keydown', (e) => {
+window.addEventListener('keydown', (e) => {  //triggers when key is pressed 
     if (keys.hasOwnProperty(e.code)) {
         keys[e.code] = true;
     }
@@ -125,27 +125,27 @@ window.addEventListener('keyup', (e) => {
 });
 
 // Movement and collision functions
-function updateSphereMovement() {
-    if (keys.ArrowUp) sphereVelocity.z -= moveSpeed;
-    if (keys.ArrowDown) sphereVelocity.z += moveSpeed;
-    if (keys.ArrowLeft) sphereVelocity.x -= moveSpeed;
-    if (keys.ArrowRight) sphereVelocity.x += moveSpeed;
+function updateSphereMovement() { 
+    if (keys.ArrowUp) sphereVelocity.z -= moveSpeed; // move forward 
+    if (keys.ArrowDown) sphereVelocity.z += moveSpeed; // move backward 
+    if (keys.ArrowLeft) sphereVelocity.x -= moveSpeed; // left 
+    if (keys.ArrowRight) sphereVelocity.x += moveSpeed; //right 
     
-    if (keys.Space && canJump) {
+    if (keys.Space ) {
         sphereVelocity.y = jumpForce;
-        canJump = false;
+        canJump = false;  //prevent double jumping 
     }
     
     sphereVelocity.y += gravity;
-    sphereVelocity.x *= 0.95;
-    sphereVelocity.z *= 0.95;
+    sphereVelocity.x *= 0.8;
+    sphereVelocity.z *= 0.8; //as a fraction
     
     shpere.position.x += sphereVelocity.x;
     shpere.position.y += sphereVelocity.y;
     shpere.position.z += sphereVelocity.z;
     
-    if (shpere.position.y <= 2) {
-        shpere.position.y = 2;
+    if (shpere.position.y <= 1) {
+        shpere.position.y = 1;  // Place sphere at ground level
         sphereVelocity.y = 0;
         canJump = true;
     }
@@ -154,43 +154,43 @@ function updateSphereMovement() {
 function checkPuzzleCollision() {
     if (!puzzleGroup) return;
 
-    const sphereRadius = 1;
+    const sphereRadius = 1;                     //sphere collosion radius 
     puzzleGroup.children.forEach((piece) => {
         if (!piece.visible) return;
         
         const distance = shpere.position.distanceTo(piece.position);
-        const collisionThreshold = sphereRadius + 1;
+        const collisionThreshold = sphereRadius + 1;   // when collision should occur 
         
         if (distance < collisionThreshold) {
-            const direction = new THREE.Vector3()
+            const direction = new THREE.Vector3()               //If objects are close enough to collide
+                                                                 // Calculates direction from sphere to piece (normalized to length 1)
                 .subVectors(piece.position, shpere.position)
                 .normalize();
             
-            const force = 2;
+            const force = 1;
             piece.userData.velocity = new THREE.Vector3(
                 direction.x * force,
                 direction.y * force + 0.5,
                 direction.z * force
             );
             
-            piece.userData.isFlying = true;
+            piece.userData.isFlying = true;  //marked affected by phiysics , "userData" is being used to track the state and physics properties of puzzle pieces:
         }
     });
 }
-
+//**************************************** Animateion for piecies after getting hit by the ball  ******************************************************************** */
 function animateFlyingPieces() {
     if (!puzzleGroup) return;
 
     puzzleGroup.children.forEach(piece => {
-        if (piece.userData.isFlying) {
-            piece.position.add(piece.userData.velocity);
+        if (piece.userData.isFlying) {  // Only animate pieces that were hit
+            piece.position.add(piece.userData.velocity);  //Updates position using stored velocity
+                                                          // Gradually decreases vertical velocity (making piece fall)
             piece.userData.velocity.y -= 0.01;
-            piece.rotation.x += 0.1;
-            piece.rotation.z += 0.1;
+            piece.rotation.x += 0.2;       //Makes pieces spin as they fly
+            piece.rotation.z += 0.2;
             
-            if (piece.position.y < -20) {
-                piece.visible = false;
-            }
+            
         }
     });
 }
