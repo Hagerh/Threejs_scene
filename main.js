@@ -1,5 +1,6 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js';
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
+import { ScoreSystem } from './scoreSystem.js';
 
 //*********************************************** scene setup ****************************************************** */
 const feildOfView = 75;
@@ -146,6 +147,7 @@ gui.addColor(optiones, 'shpereColor').onChange(function(e) {
 // Global variables
 let puzzleGroup;
 let step = 0;
+let scoreSystem;
 
 // Sphere movement setup
 const sphereVelocity = {
@@ -234,6 +236,12 @@ function checkPuzzleCollision() {
              // Play collision sound
              if (!collisionSound.isPlaying) {
                 collisionSound.play();
+            }
+
+            // Update score
+            if (!piece.userData.revealed) {
+                piece.userData.revealed = true; // Ensure score increments only once per piece
+                scoreSystem.incrementScore();
             }
         }
     });
@@ -378,5 +386,14 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+
+//score
+textureLoader.load('./hour.jpg', (texture) => {
+    createPuzzleWithShapes(texture);
+    const totalPieces = puzzleGroup.children.length; // Get the number of actual pieces
+    scoreSystem = new ScoreSystem(totalPieces);
+    animate();
 });
 
