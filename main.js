@@ -1,11 +1,13 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js';
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
 
+
 //*********************************************** scene setup ****************************************************** */
 const feildOfView = 75;
 const minRenderDistance = 0.1;
 const maxRenderDistance = 1000;
 const LightIntensity = 0.5;
+let gameStarted = false; 
 
 // Scene setup
 const scene = new THREE.Scene();
@@ -21,12 +23,14 @@ const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
 scene.fog = new THREE.Fog(0xFFFFFF, 0, 200);
 
+
 //*********************************************** Render setup ****************************************************** */
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
+
 
 //*********************************************** lightning setup ****************************************************** */
 const ambientLight = new THREE.AmbientLight(0xffffff, LightIntensity);
@@ -52,7 +56,7 @@ const textureLoader = new THREE.TextureLoader();
 
 //*********************************************** plane setup ****************************************************** */
 // Plane setup with animation parameters
-const planGeometry = new THREE.PlaneGeometry(30, 30);
+const planGeometry = new THREE.PlaneGeometry(30, 30); //x: -15 to 15, z: -15 to 15
 const planeMaterial = new THREE.MeshStandardMaterial({
     color: 0xB0B0B0,
     side: THREE.DoubleSide
@@ -103,12 +107,29 @@ const listener = new THREE.AudioListener();
 camera.add(listener);
 
 const collisionSound = new THREE.Audio(listener);
+const jumpsound = new THREE.Audio(listener);
+const buttonSound= new THREE.Audio(listener);
+
 const audioLoader = new THREE.AudioLoader();
 audioLoader.load('./textures/hitball.mp3.m4a', (buffer) => {
     collisionSound.setBuffer(buffer);
     collisionSound.setLoop(false); // Play sound once per collision
-    collisionSound.setVolume(0.5); // Adjust volume
-});
+    collisionSound.setVolume(0.3); // Adjust volume
+    
+}); 
+audioLoader.load('./textures/ballJump.m4a', (buffer) => {
+    
+    jumpsound.setBuffer(buffer);
+    jumpsound.setLoop(false); // Play sound once per collision
+    jumpsound.setVolume(1.2); // Adjust volume
+}); 
+
+audioLoader.load('./textures/hitball.mp3.m4a', (buffer) => {
+    buttonSound.setBuffer(buffer);
+    buttonSound.setLoop(false); // Play sound once per collision
+    buttonSound.setVolume(0.3); // Adjust volume
+    
+}); 
 
 //*********************************************** sphere setup ****************************************************** */
 
@@ -181,6 +202,8 @@ window.addEventListener('keyup', (e) => {
 
 // Movement and collision functions
 function updateSphereMovement() { 
+    if(!gameStarted) return;
+
     if (keys.ArrowUp) sphereVelocity.z -= moveSpeed; // move forward 
     if (keys.ArrowDown) sphereVelocity.z += moveSpeed; // move backward 
     if (keys.ArrowLeft) sphereVelocity.x -= moveSpeed; // left 
@@ -189,6 +212,7 @@ function updateSphereMovement() {
     if (keys.Space ) {
         sphereVelocity.y = jumpForce;
         canJump = false;  //prevent double jumping 
+        if(!jumpsound.isPlaying) jumpsound.play(); 
     }
     
     sphereVelocity.y += gravity;
@@ -199,6 +223,22 @@ function updateSphereMovement() {
     shpere.position.y += sphereVelocity.y;
     shpere.position.z += sphereVelocity.z;
     
+
+  // Check if the ball is outside the plane's boundaries
+  const planeHalfSize = 15; // Half of the plane's size (30x30)
+  if (
+      shpere.position.x < -planeHalfSize ||
+      shpere.position.x > planeHalfSize ||
+      shpere.position.z < -planeHalfSize ||
+      shpere.position.z > planeHalfSize
+  ) {
+      // Ball is outside the plane, make it fall
+      if (shpere.position.y > 1) {
+          shpere.position.y += sphereVelocity.y; // Apply gravity
+      }
+  } else{
+
+
     if (shpere.position.y <= 1) {
         shpere.position.y = 1;  // Place sphere at ground level
         sphereVelocity.y = 0;
@@ -206,6 +246,16 @@ function updateSphereMovement() {
     }
 }
 
+}
+
+/**
+ * Checks if the sphere (shpere) is colliding with any of the puzzle pieces.
+ * If a collision is detected, it applies a force to the puzzle piece,
+ * making it move away from the sphere. The force is calculated based on the
+ * direction from the sphere to the piece. The puzzle piece is also marked as
+ * being affected by physics (userData.isFlying = true).
+ * @function checkPuzzleCollision
+ */
 function checkPuzzleCollision() {
     if (!puzzleGroup) return;
 
@@ -299,6 +349,14 @@ function createPuzzlePiece(x, y, z, gridSize, puzzleImage, shapeType, cubeSize) 
     return piece;
 }
 
+/**
+ * Creates a 3D puzzle composed of various geometric shapes and adds it to the scene.
+ * The puzzle is constructed as a grid of shapes with a specified texture.
+ * Interactivity is initialized to allow revealing of puzzle pieces.
+ *
+ * @param {THREE.Texture} puzzleImage - Texture to be applied to the puzzle pieces.
+ */
+
 function createPuzzleWithShapes(puzzleImage) {
     const gridSize = 6;
     const cubeSize = 2;
@@ -336,6 +394,7 @@ function createPuzzleWithShapes(puzzleImage) {
 
          intersects.forEach((intersect) => {
              const face = intersect.object;
+             if(!gameStarted) return;
              if (!face.userData.revealed) {
                  face.material.opacity = 1.0;
                  face.userData.revealed = true;
@@ -348,9 +407,10 @@ function createPuzzleWithShapes(puzzleImage) {
 
 //*********************************************** animation ****************************************************** */
 
+
 function animate() {
     requestAnimationFrame(animate);
-    
+    if(gameStarted){
     updateSphereMovement();
     
     if (puzzleGroup) {
@@ -358,13 +418,9 @@ function animate() {
         checkPuzzleCollision();
         animateFlyingPieces();
     }
-    
+}
     renderer.render(scene, camera);
 }
-
-
-
-
 
 
 //*********************************************** Initialization ****************************************************** */
@@ -380,3 +436,12 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+
+//*********************************************** overlay setup ****************************************************** */
+
+startButton.addEventListener('click', () => {
+    buttonSound.play();
+    overlay.classList.add('hidden'); // Hide the overlay
+    gameStarted = true; // Start the game
+    animate(); // Start the game loop
+});
