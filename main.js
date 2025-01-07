@@ -51,6 +51,7 @@ scene.background = new THREE.Color(0xfffffff); // Darker wood tone
 const textureLoader = new THREE.TextureLoader();
 
 //*********************************************** plane setup ****************************************************** */
+// Plane setup with animation parameters
 const planGeometry = new THREE.PlaneGeometry(30, 30);
 const planeMaterial = new THREE.MeshStandardMaterial({
     color: 0xB0B0B0,
@@ -61,10 +62,57 @@ scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 plane.receiveShadow = true;
 
+// // Add swaying animation parameters
+// const swayingParams = {
+//     amplitude: 0.1,      // How far the plane tilts
+//     frequency: 0.002,    // How fast the plane sways
+//     time: 0             // Time tracker for animation
+// };
+
+
+
+// Grid helper that follows the plane
 const gridHelper = new THREE.GridHelper(30);
 scene.add(gridHelper);
 
+// // Function to update plane movement
+
+// function updatePlaneMovement() {
+//     swayingParams.time += 1;
+    
+//     // Create smooth oscillating motion using sine waves
+//     const xTilt = Math.sin(swayingParams.time * swayingParams.frequency) * swayingParams.amplitude;
+//     const zTilt = Math.cos(swayingParams.time * swayingParams.frequency * 0.7) * swayingParams.amplitude;
+    
+//     // Apply rotation while maintaining the basic -90 degrees (PI/2) rotation on X axis
+//     plane.rotation.x = -0.5 * Math.PI + xTilt;
+//     plane.rotation.z = zTilt;
+    
+//     // Update grid helper to match plane rotation
+//     gridHelper.rotation.x = xTilt;
+//     gridHelper.rotation.z = zTilt;
+// }
+
+
+// Load Audio for Collision
+
+
+
+
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+const collisionSound = new THREE.Audio(listener);
+const audioLoader = new THREE.AudioLoader();
+audioLoader.load('./textures/hitball.mp3.m4a', (buffer) => {
+    collisionSound.setBuffer(buffer);
+    collisionSound.setLoop(false); // Play sound once per collision
+    collisionSound.setVolume(0.5); // Adjust volume
+});
+
 //*********************************************** sphere setup ****************************************************** */
+
+
 const sphereGeometry = new THREE.SphereGeometry(1);
 const sphereMaterial = new THREE.MeshBasicMaterial({
     color: 0xEEEEFF,
@@ -75,13 +123,20 @@ scene.add(shpere);
 shpere.position.set(-10, 10, 0);
 shpere.castShadow = true;
 
-// GUI Setup
+//**************************************************/ GUI Setup *********************************************************** */
 const gui = new dat.GUI();
 const optiones = {
     shpereColor: 0xFFFFFF,
-    
+    // frequency: 0,
+    // amplitude: 0,
+    planeColor: 0xFFFFFF,
 };
 
+// gui.add(swayingParams, 'amplitude', 0, 0.3).name('Sway Amount');
+// gui.add(swayingParams, 'frequency', 0, 0.01).name('Sway Speed');
+gui.addColor(optiones, 'planeColor').onChange(function(e) {
+   plane.material.color.set(e);
+});
 gui.addColor(optiones, 'shpereColor').onChange(function(e) {
     shpere.material.color.set(e);
 });
@@ -175,9 +230,18 @@ function checkPuzzleCollision() {
             );
             
             piece.userData.isFlying = true;  //marked affected by phiysics , "userData" is being used to track the state and physics properties of puzzle pieces:
+
+             // Play collision sound
+             if (!collisionSound.isPlaying) {
+                collisionSound.play();
+            }
         }
     });
 }
+
+
+
+
 //**************************************** Animateion for piecies after getting hit by the ball  ******************************************************************** */
 function animateFlyingPieces() {
     if (!puzzleGroup) return;
@@ -253,31 +317,37 @@ function createPuzzleWithShapes(puzzleImage) {
     }
 
     scene.add(puzzleGroup);
-    initializePuzzleInteractivity();
+   initializePuzzleInteractivity();
 }
 
-function initializePuzzleInteractivity() {
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
 
-    window.addEventListener('mousemove', (event) => {
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+/*********************************************************** Raycasting to reveal puzzle pieces ******************************/
+ function initializePuzzleInteractivity() {
+     const raycaster = new THREE.Raycaster();
+     const mouse = new THREE.Vector2(); 
 
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(puzzleGroup.children);
+     window.addEventListener('mousemove', (event) => {
+         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-        intersects.forEach((intersect) => {
-            const face = intersect.object;
-            if (!face.userData.revealed) {
-                face.material.opacity = 1.0;
-                face.userData.revealed = true;
-            }
-        });
-    });
-}
+         raycaster.setFromCamera(mouse, camera);    // generates a ray starting from the camera's position and pointing through the mouse's location in the 3D scene.
+         const intersects = raycaster.intersectObjects(puzzleGroup.children);  //checks which objects in the puzzleGroup the ray intersects. 
+                                                                                //It returns an array of intersection objects sorted by distance from the camera.
+
+         intersects.forEach((intersect) => {
+             const face = intersect.object;
+             if (!face.userData.revealed) {
+                 face.material.opacity = 1.0;
+                 face.userData.revealed = true;
+             }
+         });
+     });
+ }
 
 //*********************************************** Animation ****************************************************** */
+
+//*********************************************** animation ****************************************************** */
+
 function animate() {
     requestAnimationFrame(animate);
     
@@ -292,6 +362,11 @@ function animate() {
     renderer.render(scene, camera);
 }
 
+
+
+
+
+
 //*********************************************** Initialization ****************************************************** */
 textureLoader.load('./hour.jpg', (texture) => {
     createPuzzleWithShapes(texture);
@@ -304,3 +379,4 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
