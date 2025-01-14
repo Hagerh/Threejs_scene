@@ -66,7 +66,8 @@ const plane = new THREE.Mesh(planGeometry, planeMaterial);
 scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 plane.receiveShadow = true;
-
+// Add this line to move the plane to the bottom of the cube
+plane.position.y = -6;
 // // Add swaying animation parameters
 // const swayingParams = {
 //     amplitude: 0.1,      // How far the plane tilts
