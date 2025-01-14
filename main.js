@@ -1,6 +1,10 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js';
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
 
+//*********************************initalizing counters for score model ***********/
+let totalPuzzlePieces = 0; // Total number of pieces in the puzzle
+let userInteractedPieces = 0; // Pieces collided with or revealed
+
 //*********************************************** scene setup ****************************************************** */
 const feildOfView = 75;
 const minRenderDistance = 0.1;
@@ -224,6 +228,11 @@ function updateSphereMovement() {
         }
     }
 }
+//**************Update progress bar */
+function updateProgressBar() {
+    const progress = (userInteractedPieces / totalPuzzlePieces) * 100;
+    document.getElementById('progress-bar').style.width = `${progress}%`;
+}
 
 /**
  * Checks if the sphere (shpere) is colliding with any of the puzzle pieces.
@@ -257,10 +266,17 @@ function checkPuzzleCollision() {
             );
             
             piece.userData.isFlying = true;  //marked affected by phiysics , "userData" is being used to track the state and physics properties of puzzle pieces:
+            
+            // Increment interaction count if not already interacted
+            if (!piece.userData.collided) {
+                userInteractedPieces++;
+                piece.userData.collided = true; // Mark as interacted
+                updateProgressBar();
+            }
 
-             // Play collision sound
-             if (!collisionSound.isPlaying) {
-                collisionSound.play();
+            // Play collision sound
+            if (!collisionSound.isPlaying) {
+               collisionSound.play();
             }
         }
     });
@@ -344,12 +360,12 @@ function createPuzzleWithShapes(puzzleImage) {
                 const shapeType = shapes[(x + y + z) % shapes.length];
                 const piece = createPuzzlePiece(x, y, z, gridSize, puzzleImage, shapeType, cubeSize);
                 puzzleGroup.add(piece);
+                totalPuzzlePieces++; // Increment the total puzzle pieces
             }
         }
     }
-
     scene.add(puzzleGroup);
-   initializePuzzleInteractivity();
+    initializePuzzleInteractivity();
 }
 
 /*********************************************************** Raycasting to reveal puzzle pieces ******************************/
