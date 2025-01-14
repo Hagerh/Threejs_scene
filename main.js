@@ -1,7 +1,6 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js';
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
 
-
 //*********************************************** scene setup ****************************************************** */
 const feildOfView = 75;
 const minRenderDistance = 0.1;
@@ -23,14 +22,12 @@ const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
 scene.fog = new THREE.Fog(0xFFFFFF, 0, 200);
 
-
 //*********************************************** Render setup ****************************************************** */
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
-
 
 //*********************************************** lightning setup ****************************************************** */
 const ambientLight = new THREE.AmbientLight(0xffffff, LightIntensity);
@@ -49,7 +46,6 @@ scene.add(dlightShadowHelper);
 
 const dlightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
 scene.add(dlightHelper);
-
 scene.background = new THREE.Color(0xfffffff); // Darker wood tone
 
 const textureLoader = new THREE.TextureLoader();
@@ -73,43 +69,31 @@ plane.receiveShadow = true;
 //     time: 0             // Time tracker for animation
 // };
 
-
-
 // Grid helper that follows the plane
 const gridHelper = new THREE.GridHelper(30);
 scene.add(gridHelper);
 
 // // Function to update plane movement
-
 // function updatePlaneMovement() {
-//     swayingParams.time += 1;
-    
+//     swayingParams.time += 1; 
 //     // Create smooth oscillating motion using sine waves
 //     const xTilt = Math.sin(swayingParams.time * swayingParams.frequency) * swayingParams.amplitude;
-//     const zTilt = Math.cos(swayingParams.time * swayingParams.frequency * 0.7) * swayingParams.amplitude;
-    
+//     const zTilt = Math.cos(swayingParams.time * swayingParams.frequency * 0.7) * swayingParams.amplitude;  
 //     // Apply rotation while maintaining the basic -90 degrees (PI/2) rotation on X axis
 //     plane.rotation.x = -0.5 * Math.PI + xTilt;
 //     plane.rotation.z = zTilt;
-    
 //     // Update grid helper to match plane rotation
 //     gridHelper.rotation.x = xTilt;
 //     gridHelper.rotation.z = zTilt;
 // }
 
-
 // Load Audio for Collision
-
-
-
-
 const listener = new THREE.AudioListener();
 camera.add(listener);
 
 const collisionSound = new THREE.Audio(listener);
 const jumpsound = new THREE.Audio(listener);
 const buttonSound= new THREE.Audio(listener);
-
 const audioLoader = new THREE.AudioLoader();
 audioLoader.load('./textures/hitball.mp3.m4a', (buffer) => {
     collisionSound.setBuffer(buffer);
@@ -123,7 +107,6 @@ audioLoader.load('./textures/ballJump.m4a', (buffer) => {
     jumpsound.setLoop(false); // Play sound once per collision
     jumpsound.setVolume(1.2); // Adjust volume
 }); 
-
 audioLoader.load('./textures/hitball.mp3.m4a', (buffer) => {
     buttonSound.setBuffer(buffer);
     buttonSound.setLoop(false); // Play sound once per collision
@@ -132,8 +115,6 @@ audioLoader.load('./textures/hitball.mp3.m4a', (buffer) => {
 }); 
 
 //*********************************************** sphere setup ****************************************************** */
-
-
 const sphereGeometry = new THREE.SphereGeometry(1);
 const sphereMaterial = new THREE.MeshBasicMaterial({
     color: 0xEEEEFF,
@@ -223,7 +204,6 @@ function updateSphereMovement() {
     shpere.position.y += sphereVelocity.y;
     shpere.position.z += sphereVelocity.z;
     
-
   // Check if the ball is outside the plane's boundaries
   const planeHalfSize = 15; // Half of the plane's size (30x30)
   if (
@@ -236,16 +216,13 @@ function updateSphereMovement() {
       if (shpere.position.y > 1) {
           shpere.position.y += sphereVelocity.y; // Apply gravity
       }
-  } else{
-
-
-    if (shpere.position.y <= 1) {
-        shpere.position.y = 1;  // Place sphere at ground level
-        sphereVelocity.y = 0;
-        canJump = true;
+    } else{
+        if (shpere.position.y <= 1) {
+            shpere.position.y = 1;  // Place sphere at ground level
+            sphereVelocity.y = 0;
+            canJump = true;
+        }
     }
-}
-
 }
 
 /**
@@ -288,9 +265,6 @@ function checkPuzzleCollision() {
         }
     });
 }
-
-
-
 
 //**************************************** Animateion for piecies after getting hit by the ball  ******************************************************************** */
 function animateFlyingPieces() {
@@ -378,7 +352,6 @@ function createPuzzleWithShapes(puzzleImage) {
    initializePuzzleInteractivity();
 }
 
-
 /*********************************************************** Raycasting to reveal puzzle pieces ******************************/
  function initializePuzzleInteractivity() {
      const raycaster = new THREE.Raycaster();
@@ -403,11 +376,7 @@ function createPuzzleWithShapes(puzzleImage) {
      });
  }
 
-//*********************************************** Animation ****************************************************** */
-
 //*********************************************** animation ****************************************************** */
-
-
 function animate() {
     requestAnimationFrame(animate);
     if(gameStarted){
@@ -422,7 +391,6 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-
 //*********************************************** Initialization ****************************************************** */
 textureLoader.load('./hour.jpg', (texture) => {
     createPuzzleWithShapes(texture);
@@ -436,9 +404,7 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-
 //*********************************************** overlay setup ****************************************************** */
-
 startButton.addEventListener('click', () => {
     buttonSound.play();
     overlay.classList.add('hidden'); // Hide the overlay

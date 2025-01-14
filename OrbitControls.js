@@ -11,29 +11,6 @@ import {
 	MathUtils
 } from 'three';
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-// Set initial camera position
-camera.position.set(10, 15, 20);
-// Initialize OrbitControls
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-// 1. Set the orbit target
-controls.target.set(0, 0, 0); // Set the target to the center of the scene or any desired point
-controls.update(); // Required after changing the target
-
-// 2. Enable damping for smoother control
-controls.enableDamping = true; // Enable damping (inertia)
-controls.dampingFactor = 0.1; // Adjust the damping factor as needed
-
-// 3. Constrain the controls
-controls.minDistance = 5; // Minimum distance the camera can zoom
-controls.maxDistance = 50; // Maximum distance the camera can zoom
-controls.maxPolarAngle = Math.PI / 2; // Limit the vertical orbit (e.g., prevent flipping under the scene)
-
 // OrbitControls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
 //
@@ -1575,32 +1552,5 @@ function interceptControlUp( event ) {
 	}
 
 }
-
-/////////////
-// Function to update the camera's position dynamically
-function updateCameraPosition(x, y, z) {
-	// Set the new position of the camera
-	camera.position.set(x, y, z);
-  
-	// Update the controls to recognize the new position
-	controls.update();
-  }
-  
-  // Example: Changing the camera position dynamically
-  updateCameraPosition(10, 15, 20); // Adjust these values as needed
-  
-  // Animation loop
-  function animate() {
-	requestAnimationFrame(animate);
-  
-	// Render the scene and camera
-	renderer.render(scene, camera);
-  
-	// Ensure controls are updated
-	controls.update();
-  }
-  
-  animate();
-  
 
 export { OrbitControls };
