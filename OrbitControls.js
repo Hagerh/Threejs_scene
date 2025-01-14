@@ -10,8 +10,7 @@ import {
 	Ray,
 	MathUtils
 } from 'three';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.171.0/examples/jsm/controls/OrbitControls.js';
-const controls = new OrbitControls(camera, renderer.domElement);
+
 // OrbitControls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
 //
@@ -73,7 +72,7 @@ class OrbitControls extends Controls {
 		// How far you can orbit vertically, upper and lower limits.
 		// Range is 0 to Math.PI radians.
 		this.minPolarAngle = 0; // radians
-		this.maxPolarAngle = Math.PI/2; // radians
+		this.maxPolarAngle = Math.PI; // radians
 
 		// How far you can orbit horizontally, upper and lower limits.
 		// If set, the interval [ min, max ] must be a sub-interval of [ - 2 PI, 2 PI ], with ( max - min < 2 PI )

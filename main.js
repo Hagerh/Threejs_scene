@@ -13,14 +13,6 @@ const maxRenderDistance = 1000;
 const LightIntensity = 0.5;
 let gameStarted = false; 
 
-// OrbitControls setup
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.minDistance = 10;
-controls.maxDistance = 100;
-controls.maxPolarAngle = Math.PI / 2;
-
 // Scene setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -29,9 +21,8 @@ const camera = new THREE.PerspectiveCamera(
     minRenderDistance,
     maxRenderDistance
 );
-
 camera.position.set(0, 10, 20);
-camera.lookAt(scene.position); // Ensure the camera is looking at the center of the scene
+
 const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
 scene.fog = new THREE.Fog(0xFFFFFF, 0, 200);
