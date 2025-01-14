@@ -21,6 +21,7 @@ const camera = new THREE.PerspectiveCamera(
     maxRenderDistance
 );
 camera.position.set(0, 10, 20);
+camera.lookAt(new THREE.Vector3(0, 0, 0)); // Ensures the camera looks at the scene center
 
 const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
