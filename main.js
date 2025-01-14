@@ -1,6 +1,7 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js';
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
 
+
 //*********************************initalizing counters for score model ***********/
 let totalPuzzlePieces = 0; // Total number of pieces in the puzzle
 let userInteractedPieces = 0; // Pieces collided with or revealed
@@ -232,6 +233,7 @@ function updateSphereMovement() {
 function updateProgressBar() {
     const progress = (userInteractedPieces / totalPuzzlePieces) * 100;
     document.getElementById('progress-bar').style.width = `${progress}%`;
+    document.getElementById('progress-text').innerText = `${userInteractedPieces}/${totalPuzzlePieces}`;
 }
 
 /**
