@@ -1,6 +1,34 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js';
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
 
+const cameraOptions = {
+    positionX: camera.position.x,
+    positionY: camera.position.y,
+    positionZ: camera.position.z,
+    rotationX: camera.rotation.x,
+    rotationY: camera.rotation.y,
+    rotationZ: camera.rotation.z,
+};
+
+gui.add(cameraOptions, 'positionX', -50, 50).onChange((value) => {
+    camera.position.x = value;
+});
+gui.add(cameraOptions, 'positionY', -50, 50).onChange((value) => {
+    camera.position.y = value;
+});
+gui.add(cameraOptions, 'positionZ', -50, 50).onChange((value) => {
+    camera.position.z = value;
+});
+gui.add(cameraOptions, 'rotationX', -Math.PI, Math.PI).onChange((value) => {
+    camera.rotation.x = value;
+});
+gui.add(cameraOptions, 'rotationY', -Math.PI, Math.PI).onChange((value) => {
+    camera.rotation.y = value;
+});
+gui.add(cameraOptions, 'rotationZ', -Math.PI, Math.PI).onChange((value) => {
+    camera.rotation.z = value;
+});
+
 
 //*********************************initalizing counters for score model ***********/
 let totalPuzzlePieces = 0; // Total number of pieces in the puzzle
