@@ -1,6 +1,17 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js';
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
+//************lives ***********/
+// Define lives and starting position for the sphere
+let lives = 3;
+const startingPosition = { x: -12, y: 10, z: 0 };
 
+// Update the lives display (you can display it in the HTML if you like)
+const livesDisplay = document.getElementById('lives-display');
+livesDisplay.innerText = `Lives: ${lives}`;
+
+function updateLivesDisplay() {
+    livesDisplay.innerText = `Lives: ${lives}`;
+}
 //*********************************initalizing counters for score model ***********/
 let totalPuzzlePieces = 0; // Total number of pieces in the puzzle
 let userInteractedPieces = 0; // Pieces collided with or revealed
@@ -186,10 +197,9 @@ window.addEventListener('keyup', (e) => {
         keys[e.code] = false;
     }
 });
-
-// Movement and collision functions
+// Modify the updateSphereMovement function to handle lives
 function updateSphereMovement() { 
-    if(!gameStarted) return;
+    if (!gameStarted) return;
 
     if (keys.ArrowUp) sphereVelocity.z -= moveSpeed; // move forward 
     if (keys.ArrowDown) sphereVelocity.z += moveSpeed; // move backward 
@@ -199,7 +209,7 @@ function updateSphereMovement() {
     if (keys.Space ) {
         sphereVelocity.y = jumpForce;
         canJump = false;  //prevent double jumping 
-        if(!jumpsound.isPlaying) jumpsound.play(); 
+        if (!jumpsound.isPlaying) jumpsound.play(); 
     }
     
     sphereVelocity.y += gravity;
@@ -209,20 +219,28 @@ function updateSphereMovement() {
     shpere.position.x += sphereVelocity.x;
     shpere.position.y += sphereVelocity.y;
     shpere.position.z += sphereVelocity.z;
-    
-  // Check if the ball is outside the plane's boundaries
-  const planeHalfSize = 15; // Half of the plane's size (30x30)
-  if (
-      shpere.position.x < -planeHalfSize ||
-      shpere.position.x > planeHalfSize ||
-      shpere.position.z < -planeHalfSize ||
-      shpere.position.z > planeHalfSize
-  ) {
-      // Ball is outside the plane, make it fall
-      if (shpere.position.y > 1) {
-          shpere.position.y += sphereVelocity.y; // Apply gravity
-      }
-    } else{
+
+    // Check if the ball is outside the plane's boundaries
+    const planeHalfSize = 15; // Half of the plane's size (30x30)
+    if (
+        shpere.position.x < -planeHalfSize ||
+        shpere.position.x > planeHalfSize ||
+        shpere.position.z < -planeHalfSize ||
+        shpere.position.z > planeHalfSize
+    ) {
+        // Ball is outside the plane, subtract a life and reset the sphere position
+        if (lives > 1) {
+            lives--;
+            updateLivesDisplay();
+            shpere.position.set(startingPosition.x, startingPosition.y, startingPosition.z); // Reset the sphere position
+        } else {
+            // Game over
+            alert('Game Over!');
+            lives = 0;
+            updateLivesDisplay();
+            gameStarted = false; // Stop the game
+        }
+    } else {
         if (shpere.position.y <= 1) {
             shpere.position.y = 1;  // Place sphere at ground level
             sphereVelocity.y = 0;
@@ -230,6 +248,50 @@ function updateSphereMovement() {
         }
     }
 }
+
+// Movement and collision functions
+//function updateSphereMovement() { 
+//    if(!gameStarted) return;
+//
+//    if (keys.ArrowUp) sphereVelocity.z -= moveSpeed; // move forward 
+//    if (keys.ArrowDown) sphereVelocity.z += moveSpeed; // move backward 
+//    if (keys.ArrowLeft) sphereVelocity.x -= moveSpeed; // left 
+//    if (keys.ArrowRight) sphereVelocity.x += moveSpeed; //right 
+//    
+//    if (keys.Space ) {
+//        sphereVelocity.y = jumpForce;
+//        canJump = false;  //prevent double jumping 
+//        if(!jumpsound.isPlaying) jumpsound.play(); 
+//    }
+//    
+//    sphereVelocity.y += gravity;
+//    sphereVelocity.x *= 0.8;
+//    sphereVelocity.z *= 0.8; //as a fraction
+//    
+//    shpere.position.x += sphereVelocity.x;
+//    shpere.position.y += sphereVelocity.y;
+//    shpere.position.z += sphereVelocity.z;
+//    
+//  // Check if the ball is outside the plane's boundaries
+//  const planeHalfSize = 15; // Half of the plane's size (30x30)
+//  if (
+//      shpere.position.x < -planeHalfSize ||
+//      shpere.position.x > planeHalfSize ||
+//      shpere.position.z < -planeHalfSize ||
+//      shpere.position.z > planeHalfSize
+//  ) {
+//      // Ball is outside the plane, make it fall
+//      if (shpere.position.y > 1) {
+//          shpere.position.y += sphereVelocity.y; // Apply gravity
+//      }
+//    } else{
+//        if (shpere.position.y <= 1) {
+//            shpere.position.y = 1;  // Place sphere at ground level
+//            sphereVelocity.y = 0;
+//            canJump = true;
+//        }
+//    }
+//}
 //**************Update progress bar */
 function updateProgressBar() {
     const progress = (userInteractedPieces / totalPuzzlePieces) * 100;
