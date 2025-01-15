@@ -35,9 +35,27 @@ function resetGame() {
         gameStarted = true;
         animate(); // Start the game loop again
     });
+//
+    //// Hide restart button
+    //restartButton.style.display = 'none';
+     
+    // Reset all puzzle pieces
+    if (puzzleGroup) {
+        puzzleGroup.clear(); // Remove all puzzle pieces from the scene
+    }
 
-    // Hide restart button
-    restartButton.style.display = 'none';
+    // Recreate the puzzle pieces
+    textureLoader.load('./hour.jpg', (texture) => {
+        createPuzzleWithShapes(texture);
+    });
+
+    // Show the overlay (in case it's hidden)
+    overlay.classList.remove('hidden');
+
+    // Optionally reset any other UI elements (like score, timer, etc.)
+    // Example: reset score display or other game stats if needed
+    document.getElementById('progress-bar').style.width = '0%';
+    document.getElementById('progress-text').innerText = '0/0';
 }
 //*********************************initalizing counters for score model ***********/
 let totalPuzzlePieces = 0; // Total number of pieces in the puzzle
@@ -521,3 +539,10 @@ startButton.addEventListener('click', () => {
     gameStarted = true; // Start the game
     animate(); // Start the game loop
 });
+
+// Add event listener for the restart button
+restartButton.addEventListener('click', () => {
+    restartGame(); // Call the restart function when the restart button is clicked
+    buttonSound.play(); // Play restart sound (optional)
+});
+
