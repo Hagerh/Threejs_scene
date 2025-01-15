@@ -2,6 +2,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.m
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
 import { OrbitControls } from './OrbitControls.js';
 
+
 //************lives ***********/
 // Image paths for lives
 const validLifeImage = './heart.png';  // Image for a valid life
@@ -108,19 +109,17 @@ const textures = {
 };
 //*********************************************** plane setup ****************************************************** */
 // Plane setup with animation parameters
-const planGeometry = new THREE.PlaneGeometry(30, 30); //x: -15 to 15, z: -15 to 15
-// Load the frosted glass texture
-const glassLoader = new THREE.TextureLoader();
-const frostedGlassTexture = glassLoader.load('./textures/this.jpeg'); // Replace with your image path
+const planGeometry = new THREE.BoxGeometry(30, 30,0.3); //x: -15 to 15, z: -15 to 15
 
 // Create the material with the texture and transparency
 const planeMaterial = new THREE.MeshStandardMaterial({
-    map: frostedGlassTexture,   // Set the texture map
-    transparent: true,          // Enable transparency
-    opacity: 0.8,               // Adjust opacity to get the frosted effect
-    side: THREE.DoubleSide,     // Apply the texture to both sides
-    roughness: 0.9,             // Set roughness for a frosted look
-    metalness: 0.1              // Adjust metalness if needed
+    color: 0xffffff, // White color
+    transparent: true,
+    opacity: 0.4, // Semi-transparent
+    roughness: 0.3, // Smooth surface
+    metalness: 0.3, // reflectivity
+    //transmission: 0.9, // Allow light to pass through
+    //ior: 1.5, // Index of Refraction             // Adjust metalness if needed
 });
 const plane = new THREE.Mesh(planGeometry, planeMaterial);
 scene.add(plane);
@@ -444,6 +443,55 @@ function createPuzzleWithShapes(puzzleImage) {
          });
      });
  }
+
+
+
+/*********************************************** Restart Game ****************************************************** */
+
+function restartGame() {
+    gameStarted = false; // Prevent game logic during reset
+
+    // Reset the sphere position and velocity
+    sphere.position.set(startingPosition.x, startingPosition.y, startingPosition.z);
+    sphereVelocity.y += gravity;
+    sphereVelocity.x *= 0.8;  //slow down the movement 
+    sphereVelocity.z *= 0.8; //as a fraction
+    
+    // Reset lives
+    lives = 3;
+    updateLivesDisplay();
+    
+    // Reset progress bar
+    userInteractedPieces = 0;
+    updateProgressBar();
+    
+    // Remove and dispose of the old puzzleGroup
+    if (puzzleGroup) {
+        for (let i = 0; i < puzzleGroup.children.length; i++) {
+            const piece = puzzleGroup.children[i];
+            piece.geometry.dispose();
+            piece.material.dispose();
+        }
+        scene.remove(puzzleGroup);
+        puzzleGroup = null;
+    }
+    
+    // Recreate puzzleGroup after loading the texture
+    textureLoader.load('./textures/purple.png', (texture) => {
+        createPuzzleWithShapes(texture);
+
+        // Reset game state only after puzzle creation
+        gameStarted = true;
+
+        // Hide restart button
+        restartButton.style.display = 'none';
+    });
+    
+    // Reset camera position and controls
+    camera.position.set(0, 10, 20);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    controls.reset();
+}
 
 //*********************************************** animation ****************************************************** */
 function animate() {
