@@ -66,8 +66,7 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(0, 10, 20);
 camera.lookAt(new THREE.Vector3(0, 0, 0)); // Ensures the camera looks at the scene center
 
-const axesHelper = new THREE.AxesHelper(5);
-scene.add(axesHelper);
+
 scene.fog = new THREE.Fog(0xFFFFFF, 0, 200);
 
 
@@ -92,11 +91,6 @@ directionalLight.shadow.mapSize.height = 1024;
 scene.add(directionalLight);
 directionalLight.shadow.camera.bottom = -12;
 
-const dlightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-scene.add(dlightShadowHelper);
-
-const dlightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
-scene.add(dlightHelper);
 const loader = new THREE.TextureLoader();
 const backTexture = loader.load('./textures/back.png'); // Replace with your image path
 // Set the scene background to the image
@@ -135,9 +129,7 @@ plane.receiveShadow = true;
 // Add this line to move the plane to the bottom of the cube
 plane.position.y = -1.5;
 
-// Grid helper that follows the plane
-const gridHelper = new THREE.GridHelper(30);
-scene.add(gridHelper);
+
 
 // Load Audio for Collision
 const listener = new THREE.AudioListener();
