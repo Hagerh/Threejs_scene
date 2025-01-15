@@ -198,13 +198,20 @@ const gravity = -0.07;
 const jumpForce = 0.8;
 let canJump = false; //prevent unlimited jumping 
 
-// Keyboard controls
-const keys = {       //This object defines the keyboard input of the controls.
+// Update the keys object definition to include a reset function
+const keys = {       
     ArrowUp: false,
     ArrowDown: false,
     ArrowLeft: false,
     ArrowRight: false,
-    Space: false
+    Space: false,
+    reset() {
+        this.ArrowUp = false;
+        this.ArrowDown = false;
+        this.ArrowLeft = false;
+        this.ArrowRight = false;
+        this.Space = false;
+    }
 };
 
 window.addEventListener('keydown', (e) => {  //triggers when key is pressed 
@@ -221,49 +228,64 @@ window.addEventListener('keyup', (e) => {
 
 // Movement and collision functions(updates the position and velocity of a sphere in a 3D environment based on user input and gravity. 
 // It handles movement in the x, y, and z axes, jumping, and collision with the boundaries of a plane.)
+// Update the updateSphereMovement function to include additional checks
 function updateSphereMovement() { 
-    if (!gameStarted) return;
+    if (!gameStarted) {
+        // Ensure the sphere stays in starting position when game is not started
+        sphere.position.set(startingPosition.x, startingPosition.y, startingPosition.z);
+        sphereVelocity.x = 0;
+        sphereVelocity.y = 0;
+        sphereVelocity.z = 0;
+        return;
+    }
 
-    if (keys.ArrowUp) sphereVelocity.z -= moveSpeed; // move forward 
-    if (keys.ArrowDown) sphereVelocity.z += moveSpeed; // move backward 
-    if (keys.ArrowLeft) sphereVelocity.x -= moveSpeed; // left 
-    if (keys.ArrowRight) sphereVelocity.x += moveSpeed; //right 
+    if (keys.ArrowUp) sphereVelocity.z -= moveSpeed;
+    if (keys.ArrowDown) sphereVelocity.z += moveSpeed;
+    if (keys.ArrowLeft) sphereVelocity.x -= moveSpeed;
+    if (keys.ArrowRight) sphereVelocity.x += moveSpeed;
     
-    if (keys.Space ) {
+    if (keys.Space && canJump) {
         sphereVelocity.y = jumpForce;
-        canJump = false;  //prevent double jumping 
-        if (!jumpsound.isPlaying) jumpsound.play(); 
+        canJump = false;
+        if (!jumpsound.isPlaying) jumpsound.play();
     }
     
     sphereVelocity.y += gravity;
-    sphereVelocity.x *= 0.8;  //slow down the movement 
-    sphereVelocity.z *= 0.8; //as a fraction
+    sphereVelocity.x *= 0.8;
+    sphereVelocity.z *= 0.8;
     
     sphere.position.x += sphereVelocity.x;
     sphere.position.y += sphereVelocity.y;
     sphere.position.z += sphereVelocity.z;
 
-    // Check if the ball is outside the plane's boundaries
-    const planeHalfSize = 15; // Half of the plane's size (30x30)
+    const planeHalfSize = 15;
     if (
         sphere.position.x < -planeHalfSize ||
         sphere.position.x > planeHalfSize ||
         sphere.position.z < -planeHalfSize ||
         sphere.position.z > planeHalfSize
     ) {
-        // Ball is outside the plane, subtract a life and reset the sphere position
         if (lives > 1) {
             lives--;
             updateLivesDisplay();
-            sphere.position.set(startingPosition.x, startingPosition.y, startingPosition.z); // Reset the sphere position
+            // Reset position and velocity when losing a life
+            sphere.position.set(startingPosition.x, startingPosition.y, startingPosition.z);
+            sphereVelocity.x = 0;
+            sphereVelocity.y = 0;
+            sphereVelocity.z = 0;
         } else {
             // Game over
             alert('Game Over!');
             lives = 0;
             updateLivesDisplay();
-            gameStarted = false; // Stop the game
+            gameStarted = false;
             // Show the restart button
             restartButton.style.display = 'block';
+            // Reset all movement
+            keys.reset();
+            sphereVelocity.x = 0;
+            sphereVelocity.y = 0;
+            sphereVelocity.z = 0;
         }
     } else {
         if (sphere.position.y <= plane.position.y + sphere.geometry.parameters.radius) {
@@ -448,14 +470,26 @@ function createPuzzleWithShapes(puzzleImage) {
 
 /*********************************************** Restart Game ****************************************************** */
 
+// Update the restart function
 function restartGame() {
-    gameStarted = false; // Prevent game logic during reset
+    // Stop the game
+    gameStarted = false;
+
+    // Reset all keyboard inputs
+    keys.reset();
+
+    // Show the overlay (start screen)
+    const overlay = document.getElementById('overlay');
+    overlay.classList.remove('hidden');
 
     // Reset the sphere position and velocity
     sphere.position.set(startingPosition.x, startingPosition.y, startingPosition.z);
     sphereVelocity.x = 0;
     sphereVelocity.y = 0;
     sphereVelocity.z = 0;
+
+    // Reset jump state
+    canJump = false;
     
     // Reset lives
     lives = 3;
@@ -469,6 +503,12 @@ function restartGame() {
     if (puzzleGroup) {
         for (let i = 0; i < puzzleGroup.children.length; i++) {
             const piece = puzzleGroup.children[i];
+            // Reset piece state
+            piece.userData.isFlying = false;
+            piece.userData.collided = false;
+            piece.userData.revealed = false;
+            piece.material.opacity = 0.2;
+            piece.userData.velocity = new THREE.Vector3();
             piece.geometry.dispose();
             piece.material.dispose();
         }
@@ -479,10 +519,7 @@ function restartGame() {
     // Recreate puzzleGroup after loading the texture
     textureLoader.load('./textures/purple.png', (texture) => {
         createPuzzleWithShapes(texture);
-
-        // Reset game state only after puzzle creation
-        gameStarted = true;
-
+        
         // Hide restart button
         restartButton.style.display = 'none';
     });
@@ -493,13 +530,16 @@ function restartGame() {
     controls.reset();
 }
 
+
 //*********************************************** animation ****************************************************** */
+// Update the animate function
 function animate() {
     requestAnimationFrame(animate);
+    
     // Update controls
     controls.update();
 
-    if(gameStarted){
+    if (gameStarted) {
         updateSphereMovement();
         
         if (puzzleGroup) {
@@ -508,6 +548,7 @@ function animate() {
             animateFlyingPieces();
         }
     }
+    
     renderer.render(scene, camera);
 }
 
@@ -525,12 +566,14 @@ window.addEventListener('resize', () => {
 });
 
 //*********************************************** overlay setup ****************************************************** */
+// Update start button event listener
+const startButton = document.getElementById('startButton');
 startButton.addEventListener('click', () => {
     buttonSound.play();
+    const overlay = document.getElementById('overlay');
     overlay.classList.add('hidden'); // Hide the overlay
     gameStarted = true; // Start the game
-    animate(); // Start the game loop
-});
+})
 
 // Add event listener for the restart button
 restartButton.addEventListener('click', () => {
