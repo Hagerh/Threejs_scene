@@ -6,8 +6,21 @@ let lives = 3;
 const startingPosition = { x: -12, y: 10, z: 0 };
 
 // Update the lives display (you can display it in the HTML if you like)
-const livesDisplay = document.getElementById('lives-display');
-livesDisplay.innerText = `Lives: ${lives}`;
+//const livesDisplay = document.getElementById('lives-display');
+//livesDisplay.innerText = `Lives: ${lives}`;
+// Display the hearts at the start of the game
+function initializeLivesDisplay() {
+    const heartsDisplay = document.getElementById('lives-display');
+    heartsDisplay.innerHTML = ''; // Clear any existing hearts
+
+    // Create 3 hearts, all red initially
+    for (let i = 0; i < 3; i++) {
+        const heart = document.createElement('span');
+        heart.textContent = '♥'; // Unicode heart symbol
+        heart.style.color = 'red'; // All hearts are red initially
+        heartsDisplay.appendChild(heart);
+    }
+}
 function updateLivesDisplay() {
     const heartsDisplay = document.getElementById('lives-display');
     heartsDisplay.innerHTML = ''; // Clear previous hearts
@@ -27,6 +40,8 @@ function updateLivesDisplay() {
         heartsDisplay.appendChild(heart);
     }
 }
+// Call this function to initialize the display at the start
+initializeLivesDisplay();
 
 ///function updateLivesDisplay() {
 ///    livesDisplay.innerText = `Lives: ${lives}`;
