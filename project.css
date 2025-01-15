@@ -129,3 +129,17 @@ body {
     max-width: 200px; /* Add a max-width to prevent it from expanding too much */
     overflow: hidden; /* Prevent overflow */
 }
+
+/* Remove any top margin or padding from your canvas */
+canvas {
+    margin-top: 0;
+    padding-top: 0;
+    display: block;
+}
+
+/* Ensure the container doesn't have unwanted spacing */
+#scene-container {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
