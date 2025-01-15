@@ -70,53 +70,6 @@ camera.lookAt(new THREE.Vector3(0, 0, 0)); // Ensures the camera looks at the sc
 
 scene.fog = new THREE.Fog(0xFFFFFF, 0, 200);
 
-//*********************************Actual arora */
-async function loadShader(url) {
-    const response = await fetch(url);
-    if (!response.ok) {
-        console.error(`Failed to load shader from ${url}: ${response.statusText}`);
-        return null;
-    }
-    return await response.text();
-}
-
-
-const vertexShaderSource = await loadShader('./vertexShader.glsl')|| 'not loading';
-const fragmentShaderSource = await loadShader('./fragmentShader.glsl')|| 'not loading';
-
-const material = new THREE.ShaderMaterial({
-    vertexShader: vertexShaderSource,
-    fragmentShader: fragmentShaderSource,
-    uniforms: {
-        time: { value: 0.0 }
-    },
-    transparent: true
-});
-
-const backgroundMaterial = new THREE.ShaderMaterial({
-    vertexShader: vertexShaderSource,
-    fragmentShader: fragmentShaderSource,
-    uniforms: {
-        time: { value: 0.0 },
-        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-    }
-});
-
-const backgroundMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(2, 2),
-    backgroundMaterial
-);
-
-// Create a scene specifically for the background
-const backgroundScene = new THREE.Scene();
-backgroundScene.add(backgroundMesh);
-
-// Camera for rendering the fullscreen quad
-const backgroundCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    // Create and add the mesh as before
-    const geometry = new THREE.PlaneGeometry(10, 5, 64, 64);
-    const aurora = new THREE.Mesh(geometry, material);
-    scene.add(aurora);
 
 //*********************************************** Render setup ****************************************************** */
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -139,10 +92,10 @@ directionalLight.shadow.mapSize.height = 1024;
 scene.add(directionalLight);
 directionalLight.shadow.camera.bottom = -12;
 
-//b// const loader = new THREE.TextureLoader();
-//b// const backTexture = loader.load('./textures/back.png'); // Replace with your image path
-//b// // Set the scene background to the image
-//b// scene.background = backTexture;
+const loader = new THREE.TextureLoader();
+const backTexture = loader.load('./textures/back.png'); // Replace with your image path
+// Set the scene background to the image
+scene.background = backTexture;
 
 const textureLoader = new THREE.TextureLoader();
 
@@ -165,8 +118,8 @@ const planeMaterial = new THREE.MeshStandardMaterial({
     opacity: 0.4, // Semi-transparent
     roughness: 0.3, // Smooth surface
     metalness: 0.3, // reflectivity
-    transmission: 0.9, // Allow light to pass through
-    ior: 1.5, // Index of Refraction             // Adjust metalness if needed
+    //transmission: 0.9, // Allow light to pass through
+    //ior: 1.5, // Index of Refraction             // Adjust metalness if needed
 });
 const plane = new THREE.Mesh(planGeometry, planeMaterial);
 scene.add(plane);
@@ -506,13 +459,6 @@ function animate() {
             animateFlyingPieces();
         }
     }
-    // Update time uniform for the aurora animation
-    backgroundMaterial.uniforms.time.value += 0.02;
-
-    // Render the background scene
-    renderer.autoClear = false; // Prevent clearing between renders
-    renderer.clear();
-    renderer.render(backgroundScene, backgroundCamera);
     renderer.render(scene, camera);
 }
 
