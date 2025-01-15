@@ -1,5 +1,6 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js';
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
+import { OrbitControls } from './OrbitControls.js';
 //************lives ***********/
 // Image paths for valid and lost lives
 const validLifeImage = './heart.png';  // Image for a valid life
@@ -75,6 +76,8 @@ renderer.shadowMap.enabled = true;
 renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
+const controls = new OrbitControls( camera, renderer.domElement );
+
 //*********************************************** lightning setup ****************************************************** */
 const ambientLight = new THREE.AmbientLight(0xffffff, LightIntensity);
 scene.add(ambientLight);
@@ -146,15 +149,15 @@ const sphereMaterial = new THREE.MeshBasicMaterial({
     color: 0xEEEEFF,
     map: textureLoader.load('./hour.jpg')
 });
-const shpere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-scene.add(shpere);
-shpere.position.set(-12, 10, 0);//initial sphere position
-shpere.castShadow = true;
+const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+scene.add(sphere);
+sphere.position.set(-12, 10, 0);//initial sphere position
+sphere.castShadow = true;
 
 //**************************************************/ GUI Setup *********************************************************** */
 const gui = new dat.GUI();
 const optiones = {
-    shpereColor: 0xFFFFFF,
+    sphereColor: 0xFFFFFF,
     // frequency: 0,
     // amplitude: 0,
     planeColor: 0xFFFFFF,
@@ -163,8 +166,8 @@ const optiones = {
 gui.addColor(optiones, 'planeColor').onChange(function(e) {
    plane.material.color.set(e);
 });
-gui.addColor(optiones, 'shpereColor').onChange(function(e) {
-    shpere.material.color.set(e);
+gui.addColor(optiones, 'sphereColor').onChange(function(e) {
+    sphere.material.color.set(e);
 });
 
 //*********************************************** Game Logic Setup ****************************************************** */
@@ -202,7 +205,9 @@ window.addEventListener('keyup', (e) => {
         keys[e.code] = false;
     }
 });
-// Modify the updateSphereMovement function to handle lives
+
+// Movement and collision functions(updates the position and velocity of a sphere in a 3D environment based on user input and gravity. 
+// It handles movement in the x, y, and z axes, jumping, and collision with the boundaries of a plane.)
 function updateSphereMovement() { 
     if (!gameStarted) return;
 
@@ -218,26 +223,26 @@ function updateSphereMovement() {
     }
     
     sphereVelocity.y += gravity;
-    sphereVelocity.x *= 0.8;
+    sphereVelocity.x *= 0.8;  //slow down the movement 
     sphereVelocity.z *= 0.8; //as a fraction
     
-    shpere.position.x += sphereVelocity.x;
-    shpere.position.y += sphereVelocity.y;
-    shpere.position.z += sphereVelocity.z;
+    sphere.position.x += sphereVelocity.x;
+    sphere.position.y += sphereVelocity.y;
+    sphere.position.z += sphereVelocity.z;
 
     // Check if the ball is outside the plane's boundaries
     const planeHalfSize = 15; // Half of the plane's size (30x30)
     if (
-        shpere.position.x < -planeHalfSize ||
-        shpere.position.x > planeHalfSize ||
-        shpere.position.z < -planeHalfSize ||
-        shpere.position.z > planeHalfSize
+        sphere.position.x < -planeHalfSize ||
+        sphere.position.x > planeHalfSize ||
+        sphere.position.z < -planeHalfSize ||
+        sphere.position.z > planeHalfSize
     ) {
         // Ball is outside the plane, subtract a life and reset the sphere position
         if (lives > 1) {
             lives--;
             updateLivesDisplay();
-            shpere.position.set(startingPosition.x, startingPosition.y, startingPosition.z); // Reset the sphere position
+            sphere.position.set(startingPosition.x, startingPosition.y, startingPosition.z); // Reset the sphere position
         } else {
             // Game over
             alert('Game Over!');
@@ -248,8 +253,8 @@ function updateSphereMovement() {
             restartButton.style.display = 'block';
         }
     } else {
-        if (shpere.position.y <= 1) {
-            shpere.position.y = 1;  // Place sphere at ground level
+        if (sphere.position.y <= 1) {
+            sphere.position.y = 1;  // Place sphere at ground level
             sphereVelocity.y = 0;
             canJump = true;
         }
@@ -264,7 +269,7 @@ function updateProgressBar() {
 }
 
 /**
- * Checks if the sphere (shpere) is colliding with any of the puzzle pieces.
+ * Checks if the sphere (sphere) is colliding with any of the puzzle pieces.
  * If a collision is detected, it applies a force to the puzzle piece,
  * making it move away from the sphere. The force is calculated based on the
  * direction from the sphere to the piece. The puzzle piece is also marked as
@@ -278,13 +283,13 @@ function checkPuzzleCollision() {
     puzzleGroup.children.forEach((piece) => {
         if (!piece.visible) return;
         
-        const distance = shpere.position.distanceTo(piece.position);
+        const distance = sphere.position.distanceTo(piece.position);
         const collisionThreshold = sphereRadius + 1;   // when collision should occur 
         
         if (distance < collisionThreshold) {
             const direction = new THREE.Vector3()               //If objects are close enough to collide
                                                                  // Calculates direction from sphere to piece (normalized to length 1)
-                .subVectors(piece.position, shpere.position)
+                .subVectors(piece.position, sphere.position)
                 .normalize();
             
             const force = 1;
@@ -327,6 +332,8 @@ function animateFlyingPieces() {
 }
 
 //*********************************************** Puzzle Creation ****************************************************** */
+
+//create a 3D puzzle piece with a specified shape
 function createPuzzlePiece(x, y, z, gridSize, puzzleImage, shapeType, cubeSize) {
     let geometry;
     const halfSize = (gridSize * cubeSize) / 2;
@@ -348,6 +355,7 @@ function createPuzzlePiece(x, y, z, gridSize, puzzleImage, shapeType, cubeSize) 
             geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
     }
 
+    // creates a new material for the 3D puzzle piece
     const material = new THREE.MeshStandardMaterial({
         map: puzzleImage,
         transparent: true,
@@ -355,14 +363,15 @@ function createPuzzlePiece(x, y, z, gridSize, puzzleImage, shapeType, cubeSize) 
     });
 
     const piece = new THREE.Mesh(geometry, material);
-    piece.castShadow = true;
-    piece.position.set(
+    piece.castShadow = true; //  the mesh should cast shadows.
+    piece.position.set( //center the piece within the grid.
         x * cubeSize - halfSize,
         y * cubeSize - halfSize+ gridSize * cubeSize / 2, // Adjust y position to ensure full grid coverage,
         z * cubeSize - halfSize
     );
-    piece.userData.revealed = false;
-    piece.userData.velocity = new THREE.Vector3();
+    //properties to track the piece state
+    piece.userData.revealed = false;  //  piece has been revealed ?
+    piece.userData.velocity = new THREE.Vector3(); //velocity of the piece
     return piece;
 }
 
@@ -422,6 +431,9 @@ function createPuzzleWithShapes(puzzleImage) {
 //*********************************************** animation ****************************************************** */
 function animate() {
     requestAnimationFrame(animate);
+    // Update controls
+    controls.update();
+
     if(gameStarted){
         updateSphereMovement();
         
