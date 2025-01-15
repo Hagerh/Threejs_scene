@@ -321,9 +321,7 @@ function animateFlyingPieces() {
                                                           // Gradually decreases vertical velocity (making piece fall)
             piece.userData.velocity.y -= 0.01;
             piece.rotation.x += 0.2;       //Makes pieces spin as they fly
-            piece.rotation.z += 0.2;
-            
-            
+            piece.rotation.z += 0.2; 
         }
     });
 }
