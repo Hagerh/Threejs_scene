@@ -115,9 +115,18 @@ const textures = {
 //*********************************************** plane setup ****************************************************** */
 // Plane setup with animation parameters
 const planGeometry = new THREE.PlaneGeometry(30, 30); //x: -15 to 15, z: -15 to 15
+// Load the frosted glass texture
+const glassLoader = new THREE.TextureLoader();
+const frostedGlassTexture = glassLoader.load('./textures/this.jpeg'); // Replace with your image path
+
+// Create the material with the texture and transparency
 const planeMaterial = new THREE.MeshStandardMaterial({
-    color: 0xB0B0B0,
-    side: THREE.DoubleSide
+    map: frostedGlassTexture,   // Set the texture map
+    transparent: true,          // Enable transparency
+    opacity: 0.8,               // Adjust opacity to get the frosted effect
+    side: THREE.DoubleSide,     // Apply the texture to both sides
+    roughness: 0.9,             // Set roughness for a frosted look
+    metalness: 0.1              // Adjust metalness if needed
 });
 const plane = new THREE.Mesh(planGeometry, planeMaterial);
 scene.add(plane);
