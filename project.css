@@ -71,3 +71,30 @@ body {
     font-weight: bold;
     color: #000;
 }
+/* Style for the Restart Button */
+#restart-button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    background: #f44336; /* Red color for emphasis */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    display: none; /* Initially hidden */
+}
+
+#restart-button:hover {
+    background: #d32f2f; /* Darker red on hover */
+}
+
+/* Optional: Positioning the restart button at the center of the screen */
+#restart-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001; /* Ensure it is above the game content */
+}

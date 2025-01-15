@@ -12,6 +12,33 @@ livesDisplay.innerText = `Lives: ${lives}`;
 function updateLivesDisplay() {
     livesDisplay.innerText = `Lives: ${lives}`;
 }
+
+//*********** Restart logic********/
+// Get the restart button element
+const restartButton = document.getElementById('restart-button');
+
+// Function to reset the game state
+function resetGame() {
+    // Reset lives, sphere position, and other game parameters
+    lives = 3;
+    shpere.position.set(startingPosition.x, startingPosition.y, startingPosition.z); // Reset sphere position
+    sphereVelocity.set(0, 0, 0); // Reset velocity
+    gameStarted = false;
+    userInteractedPieces = 0; // Reset puzzle progress
+    totalPuzzlePieces = 0; // Reset total puzzle pieces
+    puzzleGroup = null; // Reset the puzzle group
+    updateLivesDisplay(); // Update lives display
+
+    // Restart the puzzle
+    textureLoader.load('./hour.jpg', (texture) => {
+        createPuzzleWithShapes(texture);
+        gameStarted = true;
+        animate(); // Start the game loop again
+    });
+
+    // Hide restart button
+    restartButton.style.display = 'none';
+}
 //*********************************initalizing counters for score model ***********/
 let totalPuzzlePieces = 0; // Total number of pieces in the puzzle
 let userInteractedPieces = 0; // Pieces collided with or revealed
@@ -239,6 +266,8 @@ function updateSphereMovement() {
             lives = 0;
             updateLivesDisplay();
             gameStarted = false; // Stop the game
+            // Show the restart button
+            restartButton.style.display = 'block';
         }
     } else {
         if (shpere.position.y <= 1) {
