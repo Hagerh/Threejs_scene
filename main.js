@@ -163,27 +163,20 @@ bigSphere.material.transparent = true;
 
 // Collision and breaking logic
 function handleCollisionWithBigSphere() {
-    collisionCount++;
-    if (collisionCount <= maxCollisions) {
-        bigSphere.material.alphaMap = crackTextures[collisionCount - 1];
-        bigSphere.material.needsUpdate = true;
-
-        if (collisionCount === maxCollisions) {
-            // Break the sphere and reveal the puzzle
-            scene.remove(bigSphere);
-            revealPuzzle();
-        }
-    }
+    scene.remove(bigSphere); // Remove the big sphere
+    revealPuzzle(); // Reveal the puzzle grid
 }
+
 
 // Sphere interaction and collision check
 function checkBigSphereCollision() {
     const distance = sphere.position.distanceTo(bigSphere.position);
-    const collisionThreshold = 1 + 5; // Small sphere radius + big sphere radius
+    const collisionThreshold = 12.5; // Slightly more than the big sphere's radius
     if (distance < collisionThreshold) {
         handleCollisionWithBigSphere();
     }
 }
+
 //*********************************************** plane setup ****************************************************** */
 // Plane setup with animation parameters
 const planGeometry = new THREE.PlaneGeometry(30, 30); //x: -15 to 15, z: -15 to 15
