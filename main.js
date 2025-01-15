@@ -70,45 +70,6 @@ const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
 scene.fog = new THREE.Fog(0xFFFFFF, 0, 200);
 
-//**********************Bigsphere trial */
-// Create the reflective sphere
-const envMapLoader = new THREE.CubeTextureLoader();
-const envMap = envMapLoader.load([
-    './textures/px.png', './textures/nx.png',
-    './textures/py.png', './textures/ny.png',
-    './textures/pz.png', './textures/nz.png'
-]);
-
-const reflectiveMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x999999,
-    envMap: envMap,
-    metalness: 1,
-    roughness: 0,
-    reflectivity: 1,
-    clearcoat: 1,
-    clearcoatRoughness: 0
-});
-
-const bigSphereGeometry = new THREE.SphereGeometry(11.5, 64, 64);
-const bigSphere = new THREE.Mesh(bigSphereGeometry, reflectiveMaterial);
-scene.add(bigSphere);
-bigSphere.position.set(0, 5, 0);
-bigSphere.castShadow = true;
-bigSphere.receiveShadow = true;
-
-// Initialize variables for collision logic
-let collisionCount = 0;
-const maxCollisions = 5;
-
-
-// Reveal the puzzle (example function)
-function revealPuzzle() {
-    if (puzzleGroup) {
-        puzzleGroup.children.forEach(piece => {
-            piece.visible = true;
-        });
-    }
-}
 
 //*********************************************** Render setup ****************************************************** */
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -148,35 +109,6 @@ const textures = {
     torus: textureLoader.load('./textures/torus.png'),
     cylinder: textureLoader.load('./textures/cylinder.jpg'),
 };
-
-// Helper to create crack textures (using alpha maps)
-const crackTextures = [
-    textureLoader.load('./textures/crack1.jpg'),
-    textureLoader.load('./textures/crack2.jpg'),
-    textureLoader.load('./textures/crack3.jpg'),
-    textureLoader.load('./textures/crack4.jpg'),
-    textureLoader.load('./textures/crack5.jpg')
-];
-// Apply the first crack texture
-bigSphere.material.alphaMap = crackTextures[0];
-bigSphere.material.transparent = true;
-
-// Collision and breaking logic
-function handleCollisionWithBigSphere() {
-    scene.remove(bigSphere); // Remove the big sphere
-    revealPuzzle(); // Reveal the puzzle grid
-}
-
-
-// Sphere interaction and collision check
-function checkBigSphereCollision() {
-    const distance = sphere.position.distanceTo(bigSphere.position);
-    const collisionThreshold = 12.5; // Slightly more than the big sphere's radius
-    if (distance < collisionThreshold) {
-        handleCollisionWithBigSphere();
-    }
-}
-
 //*********************************************** plane setup ****************************************************** */
 // Plane setup with animation parameters
 const planGeometry = new THREE.PlaneGeometry(30, 30); //x: -15 to 15, z: -15 to 15
@@ -517,9 +449,6 @@ function animate() {
 
     if(gameStarted){
         updateSphereMovement();
-        checkBigSphereCollision();
-        checkPuzzleCollision();
-        animateFlyingPieces();
         
         if (puzzleGroup) {
             puzzleGroup.rotation.y += 0.01;
