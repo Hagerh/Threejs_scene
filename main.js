@@ -128,7 +128,7 @@ const sphereMaterial = new THREE.MeshBasicMaterial({
 });
 const shpere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 scene.add(shpere);
-shpere.position.set(-10, 10, 0);
+shpere.position.set(-12, 10, 0);//initial sphere position
 shpere.castShadow = true;
 
 //**************************************************/ GUI Setup *********************************************************** */
