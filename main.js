@@ -89,7 +89,7 @@ const reflectiveMaterial = new THREE.MeshPhysicalMaterial({
     clearcoatRoughness: 0
 });
 
-const bigSphereGeometry = new THREE.SphereGeometry(5, 64, 64);
+const bigSphereGeometry = new THREE.SphereGeometry(11.5, 64, 64);
 const bigSphere = new THREE.Mesh(bigSphereGeometry, reflectiveMaterial);
 scene.add(bigSphere);
 bigSphere.position.set(0, 5, 0);
