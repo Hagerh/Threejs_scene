@@ -97,7 +97,10 @@ scene.add(dlightShadowHelper);
 
 const dlightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
 scene.add(dlightHelper);
-scene.background = new THREE.Color(0xfffffff); // Darker wood tone
+const loader = new THREE.TextureLoader();
+const backTexture = loader.load('./textures/back.png'); // Replace with your image path
+// Set the scene background to the image
+scene.background = backTexture;
 
 const textureLoader = new THREE.TextureLoader();
 
