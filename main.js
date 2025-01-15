@@ -334,7 +334,7 @@ function createPuzzlePiece(x, y, z, gridSize, puzzleImage, shapeType, cubeSize) 
     piece.castShadow = true;
     piece.position.set(
         x * cubeSize - halfSize,
-        y * cubeSize - halfSize,
+        y * cubeSize - halfSize+ gridSize * cubeSize / 2, // Adjust y position to ensure full grid coverage,
         z * cubeSize - halfSize
     );
     piece.userData.revealed = false;
