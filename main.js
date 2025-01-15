@@ -453,9 +453,9 @@ function restartGame() {
 
     // Reset the sphere position and velocity
     sphere.position.set(startingPosition.x, startingPosition.y, startingPosition.z);
-    sphereVelocity.y += gravity;
-    sphereVelocity.x *= 0.8;  //slow down the movement 
-    sphereVelocity.z *= 0.8; //as a fraction
+    sphereVelocity.x = 0;
+    sphereVelocity.y = 0;
+    sphereVelocity.z = 0;
     
     // Reset lives
     lives = 3;
