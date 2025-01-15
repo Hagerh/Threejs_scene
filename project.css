@@ -98,3 +98,15 @@ body {
     transform: translate(-50%, -50%);
     z-index: 1001; /* Ensure it is above the game content */
 }
+
+#lives-display {
+    font-size: 30px; /* Adjust size as needed */
+    font-family: Arial, sans-serif;
+    margin-top: 20px;
+    display: flex; /* Flexbox for aligning hearts horizontally */
+    gap: 5px; /* Space between hearts */
+}
+
+#lives-display span {
+    transition: color 0.3s ease; /* Smooth color transition */
+}

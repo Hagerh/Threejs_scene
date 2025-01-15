@@ -8,10 +8,29 @@ const startingPosition = { x: -12, y: 10, z: 0 };
 // Update the lives display (you can display it in the HTML if you like)
 const livesDisplay = document.getElementById('lives-display');
 livesDisplay.innerText = `Lives: ${lives}`;
-
 function updateLivesDisplay() {
-    livesDisplay.innerText = `Lives: ${lives}`;
+    const heartsDisplay = document.getElementById('lives-display');
+    heartsDisplay.innerHTML = ''; // Clear previous hearts
+
+    // Create 3 hearts and set their color based on lives
+    for (let i = 0; i < 3; i++) {
+        const heart = document.createElement('span');
+        heart.textContent = '♥'; // Unicode heart symbol
+
+        // Color hearts based on the number of lives
+        if (i < lives) {
+            heart.style.color = 'red'; // Red if the life is intact
+        } else {
+            heart.style.color = 'grey'; // Grey if the life is lost
+        }
+
+        heartsDisplay.appendChild(heart);
+    }
 }
+
+///function updateLivesDisplay() {
+///    livesDisplay.innerText = `Lives: ${lives}`;
+///}
 
 //*********** Restart logic********/
 // Get the restart button element
