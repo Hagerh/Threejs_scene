@@ -75,7 +75,7 @@ body {
 #restart-button {
     padding: 10px 20px;
     font-size: 1.2rem;
-    background: #f44336; /* Red color for emphasis */
+    background: #acaf4c; /* Red color for emphasis */
     color: white;
     border: none;
     cursor: pointer;
@@ -84,7 +84,7 @@ body {
 }
 
 #restart-button:hover {
-    background: #d32f2f; /* Darker red on hover */
+    background: #76c7c0; /* Darker red on hover */
 }
 
 /* Optional: Positioning the restart button at the center of the screen */
@@ -102,11 +102,16 @@ body {
 #lives-display {
     font-size: 30px; /* Adjust size as needed */
     font-family: Arial, sans-serif;
-    margin-top: 20px;
+    margin-top: 5px;
     display: flex; /* Flexbox for aligning hearts horizontally */
     gap: 5px; /* Space between hearts */
 }
 
 #lives-display span {
     transition: color 0.3s ease; /* Smooth color transition */
+}
+.life-heart {
+    width: 30px; /* Adjust size as needed */
+    height: 30px;
+    margin-right: 5px; /* Adjust spacing between hearts */
 }
