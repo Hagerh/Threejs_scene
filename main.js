@@ -3,13 +3,13 @@ import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.m
 import { OrbitControls } from './OrbitControls.js';
 
 
-//************lives ***********/
+//*********** Lives logic********/
 // Image paths for lives
 const validLifeImage = './heart.png';  // Image for a valid life
 const lostLifeImage = './broken-heart.png';    // Image for a lost life
 // Define lives and starting position for the sphere
 let lives = 3;
-const startingPosition = { x: -12, y: 10, z: 0 };
+const startingPosition = { x: -12, y: -0.5, z: 0 };
 
 // Update the lives display
 function initializeLivesDisplay() {
@@ -266,8 +266,8 @@ function updateSphereMovement() {
             restartButton.style.display = 'block';
         }
     } else {
-        if (sphere.position.y <= 1) {
-            sphere.position.y = 1;  // Place sphere at ground level
+        if (sphere.position.y <= plane.position.y + sphere.geometry.parameters.radius) {
+            sphere.position.y = plane.position.y + sphere.geometry.parameters.radius;
             sphereVelocity.y = 0;
             canJump = true;
         }
