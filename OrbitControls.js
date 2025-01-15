@@ -58,8 +58,8 @@ class OrbitControls extends Controls {
 		this.cursor = new Vector3();
 
 		// How far you can dolly in and out ( PerspectiveCamera only )
-		this.minDistance = 0;
-		this.maxDistance = Infinity;
+		this.minDistance = 10;
+		this.maxDistance = 100;
 
 		// How far you can zoom in and out ( OrthographicCamera only )
 		this.minZoom = 0;
@@ -72,7 +72,7 @@ class OrbitControls extends Controls {
 		// How far you can orbit vertically, upper and lower limits.
 		// Range is 0 to Math.PI radians.
 		this.minPolarAngle = 0; // radians
-		this.maxPolarAngle = Math.PI; // radians
+		this.maxPolarAngle = Math.PI/2; // radians
 
 		// How far you can orbit horizontally, upper and lower limits.
 		// If set, the interval [ min, max ] must be a sub-interval of [ - 2 PI, 2 PI ], with ( max - min < 2 PI )
