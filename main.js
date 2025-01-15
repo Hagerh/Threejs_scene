@@ -8,10 +8,7 @@ const lostLifeImage = './broken-heart.png';    // Image for a lost life
 let lives = 3;
 const startingPosition = { x: -12, y: 10, z: 0 };
 
-// Update the lives display (you can display it in the HTML if you like)
-//const livesDisplay = document.getElementById('lives-display');
-//livesDisplay.innerText = `Lives: ${lives}`;
-// Display the hearts at the start of the game
+// Update the lives display
 function initializeLivesDisplay() {
     const heartsDisplay = document.getElementById('lives-display');
     heartsDisplay.innerHTML = ''; // Clear any existing hearts
@@ -35,61 +32,16 @@ function updateLivesDisplay() {
         } else {
             heartImg.src = lostLifeImage;   // Show lost life image
         }
-
         heartsDisplay.appendChild(heartImg);
     }
 }
 // Call this function to initialize the display at the start
 initializeLivesDisplay();
 
-///function updateLivesDisplay() {
-///    livesDisplay.innerText = `Lives: ${lives}`;
-///}
-
 //*********** Restart logic********/
 // Get the restart button element
 const restartButton = document.getElementById('restart-button');
 
-// Function to reset the game state
-function resetGame() {
-    // Reset lives, sphere position, and other game parameters
-    lives = 3;
-    shpere.position.set(startingPosition.x, startingPosition.y, startingPosition.z); // Reset sphere position
-    sphereVelocity.set(0, 0, 0); // Reset velocity
-    gameStarted = false;
-    userInteractedPieces = 0; // Reset puzzle progress
-    totalPuzzlePieces = 0; // Reset total puzzle pieces
-    puzzleGroup = null; // Reset the puzzle group
-    updateLivesDisplay(); // Update lives display
-
-    // Restart the puzzle
-    textureLoader.load('./hour.jpg', (texture) => {
-        createPuzzleWithShapes(texture);
-        gameStarted = true;
-        animate(); // Start the game loop again
-    });
-//
-    //// Hide restart button
-    //restartButton.style.display = 'none';
-     
-    // Reset all puzzle pieces
-    if (puzzleGroup) {
-        puzzleGroup.clear(); // Remove all puzzle pieces from the scene
-    }
-
-    // Recreate the puzzle pieces
-    textureLoader.load('./hour.jpg', (texture) => {
-        createPuzzleWithShapes(texture);
-    });
-
-    // Show the overlay (in case it's hidden)
-    overlay.classList.remove('hidden');
-
-    // Optionally reset any other UI elements (like score, timer, etc.)
-    // Example: reset score display or other game stats if needed
-    document.getElementById('progress-bar').style.width = '0%';
-    document.getElementById('progress-text').innerText = '0/0';
-}
 //*********************************initalizing counters for score model ***********/
 let totalPuzzlePieces = 0; // Total number of pieces in the puzzle
 let userInteractedPieces = 0; // Pieces collided with or revealed
@@ -157,30 +109,10 @@ plane.rotation.x = -0.5 * Math.PI;
 plane.receiveShadow = true;
 // Add this line to move the plane to the bottom of the cube
 plane.position.y = -6;
-// // Add swaying animation parameters
-// const swayingParams = {
-//     amplitude: 0.1,      // How far the plane tilts
-//     frequency: 0.002,    // How fast the plane sways
-//     time: 0             // Time tracker for animation
-// };
 
 // Grid helper that follows the plane
 const gridHelper = new THREE.GridHelper(30);
 scene.add(gridHelper);
-
-// // Function to update plane movement
-// function updatePlaneMovement() {
-//     swayingParams.time += 1; 
-//     // Create smooth oscillating motion using sine waves
-//     const xTilt = Math.sin(swayingParams.time * swayingParams.frequency) * swayingParams.amplitude;
-//     const zTilt = Math.cos(swayingParams.time * swayingParams.frequency * 0.7) * swayingParams.amplitude;  
-//     // Apply rotation while maintaining the basic -90 degrees (PI/2) rotation on X axis
-//     plane.rotation.x = -0.5 * Math.PI + xTilt;
-//     plane.rotation.z = zTilt;
-//     // Update grid helper to match plane rotation
-//     gridHelper.rotation.x = xTilt;
-//     gridHelper.rotation.z = zTilt;
-// }
 
 // Load Audio for Collision
 const listener = new THREE.AudioListener();
@@ -197,7 +129,6 @@ audioLoader.load('./textures/hitball.mp3.m4a', (buffer) => {
     
 }); 
 audioLoader.load('./textures/ballJump.m4a', (buffer) => {
-    
     jumpsound.setBuffer(buffer);
     jumpsound.setLoop(false); // Play sound once per collision
     jumpsound.setVolume(1.2); // Adjust volume
@@ -229,20 +160,16 @@ const optiones = {
     planeColor: 0xFFFFFF,
 };
 
-// gui.add(swayingParams, 'amplitude', 0, 0.3).name('Sway Amount');
-// gui.add(swayingParams, 'frequency', 0, 0.01).name('Sway Speed');
 gui.addColor(optiones, 'planeColor').onChange(function(e) {
    plane.material.color.set(e);
 });
 gui.addColor(optiones, 'shpereColor').onChange(function(e) {
     shpere.material.color.set(e);
 });
-//gui.add(optiones, 'speed', 0, 0.1);
 
 //*********************************************** Game Logic Setup ****************************************************** */
 // Global variables
 let puzzleGroup;
-let step = 0;
 
 // Sphere movement setup
 const sphereVelocity = {
@@ -329,49 +256,6 @@ function updateSphereMovement() {
     }
 }
 
-// Movement and collision functions
-//function updateSphereMovement() { 
-//    if(!gameStarted) return;
-//
-//    if (keys.ArrowUp) sphereVelocity.z -= moveSpeed; // move forward 
-//    if (keys.ArrowDown) sphereVelocity.z += moveSpeed; // move backward 
-//    if (keys.ArrowLeft) sphereVelocity.x -= moveSpeed; // left 
-//    if (keys.ArrowRight) sphereVelocity.x += moveSpeed; //right 
-//    
-//    if (keys.Space ) {
-//        sphereVelocity.y = jumpForce;
-//        canJump = false;  //prevent double jumping 
-//        if(!jumpsound.isPlaying) jumpsound.play(); 
-//    }
-//    
-//    sphereVelocity.y += gravity;
-//    sphereVelocity.x *= 0.8;
-//    sphereVelocity.z *= 0.8; //as a fraction
-//    
-//    shpere.position.x += sphereVelocity.x;
-//    shpere.position.y += sphereVelocity.y;
-//    shpere.position.z += sphereVelocity.z;
-//    
-//  // Check if the ball is outside the plane's boundaries
-//  const planeHalfSize = 15; // Half of the plane's size (30x30)
-//  if (
-//      shpere.position.x < -planeHalfSize ||
-//      shpere.position.x > planeHalfSize ||
-//      shpere.position.z < -planeHalfSize ||
-//      shpere.position.z > planeHalfSize
-//  ) {
-//      // Ball is outside the plane, make it fall
-//      if (shpere.position.y > 1) {
-//          shpere.position.y += sphereVelocity.y; // Apply gravity
-//      }
-//    } else{
-//        if (shpere.position.y <= 1) {
-//            shpere.position.y = 1;  // Place sphere at ground level
-//            sphereVelocity.y = 0;
-//            canJump = true;
-//        }
-//    }
-//}
 //**************Update progress bar */
 function updateProgressBar() {
     const progress = (userInteractedPieces / totalPuzzlePieces) * 100;
