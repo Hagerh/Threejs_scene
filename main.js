@@ -149,10 +149,10 @@ const sphereMaterial = new THREE.MeshBasicMaterial({
     color: 0xEEEEFF,
     map: textureLoader.load('./hour.jpg')
 });
-const shpere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-scene.add(shpere);
-shpere.position.set(-12, 10, 0);//initial sphere position
-shpere.castShadow = true;
+const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+scene.add(sphere);
+sphere.position.set(-12, 10, 0);//initial sphere position
+sphere.castShadow = true;
 
 //**************************************************/ GUI Setup *********************************************************** */
 const gui = new dat.GUI();
@@ -226,23 +226,23 @@ function updateSphereMovement() {
     sphereVelocity.x *= 0.8;  //slow down the movement 
     sphereVelocity.z *= 0.8; //as a fraction
     
-    shpere.position.x += sphereVelocity.x;
-    shpere.position.y += sphereVelocity.y;
-    shpere.position.z += sphereVelocity.z;
+    sphere.position.x += sphereVelocity.x;
+    sphere.position.y += sphereVelocity.y;
+    sphere.position.z += sphereVelocity.z;
 
     // Check if the ball is outside the plane's boundaries
     const planeHalfSize = 15; // Half of the plane's size (30x30)
     if (
-        shpere.position.x < -planeHalfSize ||
-        shpere.position.x > planeHalfSize ||
-        shpere.position.z < -planeHalfSize ||
-        shpere.position.z > planeHalfSize
+        sphere.position.x < -planeHalfSize ||
+        sphere.position.x > planeHalfSize ||
+        sphere.position.z < -planeHalfSize ||
+        sphere.position.z > planeHalfSize
     ) {
         // Ball is outside the plane, subtract a life and reset the sphere position
         if (lives > 1) {
             lives--;
             updateLivesDisplay();
-            shpere.position.set(startingPosition.x, startingPosition.y, startingPosition.z); // Reset the sphere position
+            sphere.position.set(startingPosition.x, startingPosition.y, startingPosition.z); // Reset the sphere position
         } else {
             // Game over
             alert('Game Over!');
@@ -253,8 +253,8 @@ function updateSphereMovement() {
             restartButton.style.display = 'block';
         }
     } else {
-        if (shpere.position.y <= 1) {
-            shpere.position.y = 1;  // Place sphere at ground level
+        if (sphere.position.y <= 1) {
+            sphere.position.y = 1;  // Place sphere at ground level
             sphereVelocity.y = 0;
             canJump = true;
         }
