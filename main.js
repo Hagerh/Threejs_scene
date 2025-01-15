@@ -2,7 +2,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.m
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
 import { OrbitControls } from './OrbitControls.js';
 
-
 //************lives ***********/
 // Image paths for lives
 const validLifeImage = './heart.png';  // Image for a valid life
@@ -53,7 +52,7 @@ let userInteractedPieces = 0; // Pieces collided with or revealed
 const feildOfView = 75;
 const minRenderDistance = 0.1;
 const maxRenderDistance = 1000;
-const LightIntensity = 0.5;
+const LightIntensity = 1;
 let gameStarted = false; 
 
 // Scene setup
