@@ -474,4 +474,3 @@ restartButton.addEventListener('click', () => {
     restartGame(); // Call the restart function when the restart button is clicked
     buttonSound.play(); // Play restart sound (optional)
 });
-
