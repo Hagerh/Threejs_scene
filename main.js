@@ -124,7 +124,7 @@ scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 plane.receiveShadow = true;
 // Add this line to move the plane to the bottom of the cube
-plane.position.y = -6;
+plane.position.y = -1.5;
 
 // Grid helper that follows the plane
 const gridHelper = new THREE.GridHelper(30);
