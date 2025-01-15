@@ -160,7 +160,7 @@ audioLoader.load('./textures/hitball.mp3.m4a', (buffer) => {
 const sphereGeometry = new THREE.SphereGeometry(1);
 const sphereMaterial = new THREE.MeshBasicMaterial({
     color: 0xEEEEFF,
-    map: textureLoader.load('./hour.jpg')
+    map: textureLoader.load('./textures/purple.png')
 });
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 scene.add(sphere);
@@ -463,7 +463,7 @@ function animate() {
 }
 
 //*********************************************** Initialization ****************************************************** */
-textureLoader.load('./hour.jpg', (texture) => {
+textureLoader.load('./textures/purple.png', (texture) => {
     createPuzzleWithShapes(texture);
     animate();
 });
