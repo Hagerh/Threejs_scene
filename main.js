@@ -106,7 +106,7 @@ const textures = {
     box: textureLoader.load('./textures/box.jpg'),
     sphere: textureLoader.load('./textures/sphere.jpg'),
     cone: textureLoader.load('./textures/cone.jpg'),
-    torus: textureLoader.load('./textures/torus.jpg'),
+    torus: textureLoader.load('./textures/torus.png'),
     cylinder: textureLoader.load('./textures/cylinder.jpg'),
 };
 //*********************************************** plane setup ****************************************************** */
