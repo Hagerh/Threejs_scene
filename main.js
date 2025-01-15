@@ -1,6 +1,9 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js';
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
 //************lives ***********/
+// Image paths for valid and lost lives
+const validLifeImage = './heart.png';  // Image for a valid life
+const lostLifeImage = './broken-heart.png';    // Image for a lost life
 // Define lives and starting position for the sphere
 let lives = 3;
 const startingPosition = { x: -12, y: 10, z: 0 };
@@ -15,10 +18,9 @@ function initializeLivesDisplay() {
 
     // Create 3 hearts, all red initially
     for (let i = 0; i < 3; i++) {
-        const heart = document.createElement('span');
-        heart.textContent = '♥'; // Unicode heart symbol
-        heart.style.color = 'red'; // All hearts are red initially
-        heartsDisplay.appendChild(heart);
+        const heartImg = document.createElement('img');
+        heartImg.src = validLifeImage;; // All hearts are red initially
+        heartsDisplay.appendChild(heartImg);
     }
 }
 function updateLivesDisplay() {
@@ -27,17 +29,14 @@ function updateLivesDisplay() {
 
     // Create 3 hearts and set their color based on lives
     for (let i = 0; i < 3; i++) {
-        const heart = document.createElement('span');
-        heart.textContent = '♥'; // Unicode heart symbol
-
-        // Color hearts based on the number of lives
+        const heartImg = document.createElement('img');
         if (i < lives) {
-            heart.style.color = 'red'; // Red if the life is intact
+            heartImg.src = validLifeImage;  // Show valid life image
         } else {
-            heart.style.color = 'grey'; // Grey if the life is lost
+            heartImg.src = lostLifeImage;   // Show lost life image
         }
 
-        heartsDisplay.appendChild(heart);
+        heartsDisplay.appendChild(heartImg);
     }
 }
 // Call this function to initialize the display at the start

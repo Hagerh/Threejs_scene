@@ -115,3 +115,17 @@ body {
     height: 30px;
     margin-right: 5px; /* Adjust spacing between hearts */
 }
+#lives-display img {
+    width: 30px; /* Set a fixed width for the heart images */
+    height: 30px; /* Ensure the height matches */
+}
+#lives-display {
+    font-size: 30px;
+    font-family: Arial, sans-serif;
+    margin-top: 5px;
+    display: flex;
+    justify-content: flex-start; /* Align hearts to the left */
+    gap: 5px;
+    max-width: 200px; /* Add a max-width to prevent it from expanding too much */
+    overflow: hidden; /* Prevent overflow */
+}
