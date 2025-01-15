@@ -1,8 +1,10 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js';
 import * as dat from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.module.js';
 import { OrbitControls } from './OrbitControls.js';
+
+
 //************lives ***********/
-// Image paths for valid and lost lives
+// Image paths for lives
 const validLifeImage = './heart.png';  // Image for a valid life
 const lostLifeImage = './broken-heart.png';    // Image for a lost life
 // Define lives and starting position for the sphere
@@ -99,6 +101,14 @@ scene.background = new THREE.Color(0xfffffff); // Darker wood tone
 
 const textureLoader = new THREE.TextureLoader();
 
+// Load textures for different shapes
+const textures = {
+    box: textureLoader.load('./textures/box.jpg'),
+    sphere: textureLoader.load('./textures/sphere.jpg'),
+    cone: textureLoader.load('./textures/cone.jpg'),
+    torus: textureLoader.load('./textures/torus.jpg'),
+    cylinder: textureLoader.load('./textures/cylinder.jpg'),
+};
 //*********************************************** plane setup ****************************************************** */
 // Plane setup with animation parameters
 const planGeometry = new THREE.PlaneGeometry(30, 30); //x: -15 to 15, z: -15 to 15
@@ -355,9 +365,12 @@ function createPuzzlePiece(x, y, z, gridSize, puzzleImage, shapeType, cubeSize) 
             geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
     }
 
+    // Select texture based on shape type
+    const texture = textures[shapeType] || textures.box; // Default to box texture if shapeType is not found
+
     // creates a new material for the 3D puzzle piece
     const material = new THREE.MeshStandardMaterial({
-        map: puzzleImage,
+        map: texture,
         transparent: true,
         opacity: 0.2
     });
